@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perhitungan Volume dan Luas</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .formula {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Perhitungan Volume dan Luas Bangun</h1>
+        <form action="/calculate" method="POST">
+            <div class="form-group">
+                <label for="name">Nama:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="school">Sekolah:</label>
+                <input type="text" class="form-control" id="school" name="school" required>
+            </div>
+            <div class="form-group">
+                <label for="age">Usia:</label>
+                <input type="number" class="form-control" id="age" name="age" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Alamat:</label>
+                <input type="text" class="form-control" id="address" name="address" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Nomor Telepon:</label>
+                <input type="text" class="form-control" id="phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label>Jenis Bangun:</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="flat" name="type" value="flat" checked>
+                    <label class="form-check-label" for="flat">Bangun Datar</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="solid" name="type" value="solid">
+                    <label class="form-check-label" for="solid">Bangun Ruang</label>
+                </div>
+            </div>
+            <div class="form-group" id="shape-container">
+                <!-- Pilihan bangun akan dimasukkan di sini -->
+            </div>
+            <div id="form-fields">
+                <!-- Field dinamis akan dimasukkan di sini -->
+            </div>
+            <button type="submit" class="btn btn-primary">Hitung</button>
+        </form>
+        <br>
+        <a href="/download" class="btn btn-info">Unduh CSV</a>
+        <a href="/results" class="btn btn-info">Lihat Semua Hasil</a>
+    </div>
+    <script>
+        function updateShapeOptions() {
+            const type = document.querySelector('input[name="type"]:checked').value;
+            const shapeContainer = document.getElementById('shape-container');
+            let html = '';
+
+            if (type === 'flat') {
+                html = `
+                    <label for="shape">Pilih Bangun Datar:</label>
+                    <select class="form-control" id="shape" name="shape" required>
+                        <option value="square">Persegi</option>
+                        <option value="triangle">Segitiga</option>
+                        <option value="circle">Lingkaran</option>
+                    </select>
+                `;
+            } else if (type === 'solid') {
+                html = `
+                    <label for="shape">Pilih Bangun Ruang:</label>
+                    <select class="form-control" id="shape" name="shape" required>
+                        <option value="cube">Kubus</option>
+                        <option value="pyramid">Piramida</option>
+                        <option value="cylinder">Silinder</option>
+                    </select>
+                `;
+            }
+
+            shapeContainer.innerHTML = html;
+            updateFormFields(); // Update form fields sesuai pilihan awal
+        }
+
+        function updateFormFields() {
+            const shape = document.getElementById('shape')?.value;
+            const formFields = document.getElementById('form-fields');
+            let html = '';
+            let formula = '';
+
+            switch (shape) {
+                case 'square':
+                    html = `
+                        <div class="form-group">
+                            <label for="dimension1">Panjang Sisi:</label>
+                            <input type="number" class="form-control" id="dimension1" name="dimension1" required>
+                        </div>
+                    `;
+                    formula = 'Rumus: Luas = sisi × sisi';
+                    break;
+                case 'triangle':
+                    html = `
+                        <div class="form-group">
+                            <label for="dimension1">Panjang Alas:</label>
+                            <input type="number" class="form-control" id="dimension1" name="dimension1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dimension2">Tinggi:</label>
+                            <input type="number" class="form-control" id="dimension2" name="dimension2" required>
+                        </div>
+                    `;
+                    formula = 'Rumus: Luas = 0.5 × alas × tinggi';
+                    break;
+                case 'circle':
+                    html = `
+                        <div class="form-group">
+                            <label for="dimension1">Jari-Jari:</label>
+                            <input type="number" class="form-control" id="dimension1" name="dimension1" required>
+                        </div>
+                    `;
+                    formula = 'Rumus: Luas = π × jari-jari²';
+                    break;
+                case 'cube':
+                    html = `
+                        <div class="form-group">
+                            <label for="dimension1">Panjang Sisi:</label>
+                            <input type="number" class="form-control" id="dimension1" name="dimension1" required>
+                        </div>
+                    `;
+                    formula = 'Rumus: Volume = sisi³';
+                    break;
+                case 'pyramid':
+                    html = `
+                        <div class="form-group">
+                            <label for="dimension1">Panjang Alas:</label>
+                            <input type="number" class="form-control" id="dimension1" name="dimension1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dimension2">Tinggi:</label>
+                            <input type="number" class="form-control" id="dimension2" name="dimension2" required>
+                        </div>
+                    `;
+                    formula = 'Rumus: Volume = (1/3) × alas² × tinggi';
+                    break;
+                case 'cylinder':
+                    html = `
+                        <div class="form-group">
+                            <label for="dimension1">Jari-Jari:</label>
+                            <input type="number" class="form-control" id="dimension1" name="dimension1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dimension2">Tinggi:</label>
+                            <input type="number" class="form-control" id="dimension2" name="dimension2" required>
+                        </div>
+                    `;
+                    formula = 'Rumus: Volume = π × jari-jari² × tinggi';
+                    break;
+                default:
+                    html = '';
+                    formula = '';
+            }
+
+            formFields.innerHTML = html;
+            if (formula) {
+                const formulaElement = document.getElementById('formula');
+                if (formulaElement) {
+                    formulaElement.textContent = formula;
+                } else {
+                    formFields.insertAdjacentHTML('beforeend', `<div id="formula" class="formula">${formula}</div>`);
+                }
+            }
+        }
+
+        document.querySelectorAll('input[name="type"]').forEach(input => {
+            input.addEventListener('change', updateShapeOptions);
+        });
+        document.getElementById('shape-container').addEventListener('change', updateFormFields);
+        window.onload = updateShapeOptions; // Pastikan pilihan bangun ditampilkan berdasarkan pilihan awal
+    </script>
+</body>
+</html>
